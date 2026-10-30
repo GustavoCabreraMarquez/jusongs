@@ -55,7 +55,8 @@ fun MainScreen(vm: PlayerViewModel) {
                                 modifier = Modifier.weight(1f),
                                 current = ui,
                                 onOpenNowPlaying = { nowPlaying = true },
-                                onTogglePlay = vm::togglePlay
+                                onTogglePlay = vm::togglePlay,
+                                onRefresh = vm::refreshLibrary
                             )
                             NavTab.Albums -> AlbumsTab(library.albums, onOpen = { openAlbumId = it.id }, modifier = Modifier.weight(1f))
                             NavTab.Songs -> SongsTab(

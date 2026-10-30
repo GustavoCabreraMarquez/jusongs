@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.swave.swave2000.components.ButtonLabel
+import com.swave.swave2000.components.TactileButton
 import com.swave.swave2000.components.glass
 import com.swave.swave2000.data.LIBRARY_FOLDER
 import com.swave.swave2000.model.Album
@@ -39,7 +41,7 @@ fun AlbumsTab(albums: List<Album>, onOpen: (Album) -> Unit, modifier: Modifier =
 }
 
 @Composable
-fun EmptyLibrary(modifier: Modifier = Modifier) {
+fun EmptyLibrary(modifier: Modifier = Modifier, onRefresh: (() -> Unit)? = null) {
     val t = LocalThemeTokens.current
     Column(modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.Center) {
         Column(Modifier.glass(RoundedCornerShape(20.dp)).padding(20.dp)) {
@@ -50,6 +52,9 @@ fun EmptyLibrary(modifier: Modifier = Modifier) {
                 color = t.ink2,
                 modifier = Modifier.padding(top = 4.dp)
             )
+            if (onRefresh != null) {
+                TactileButton(onClick = onRefresh, modifier = Modifier.padding(top = 12.dp)) { ButtonLabel("Refresh library") }
+            }
         }
     }
 }

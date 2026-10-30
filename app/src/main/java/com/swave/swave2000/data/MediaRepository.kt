@@ -4,6 +4,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.database.ContentObserver
 import android.database.Cursor
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 import android.os.Handler
@@ -21,6 +22,9 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
 data class Library(
     val songs: List<Song>,
@@ -63,6 +67,24 @@ class MediaRepository(private val context: Context) {
             @Suppress("DEPRECATION")
             java.io.File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "Jusongs").mkdirs()
         }
+    }
+
+    /** Asks the system to index every file in the library folder (e.g. ones copied over USB), then reloads. */
+    suspend fun rescan(): Library {
+        withContext(Dispatchers.IO) {
+            @Suppress("DEPRECATION")
+            val root = java.io.File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "Jusongs")
+            val paths = root.walkTopDown().filter { it.isFile }.map { it.absolutePath }.toList().toTypedArray()
+            if (paths.isNotEmpty()) {
+                suspendCancellableCoroutine { cont ->
+                    var left = paths.size
+                    MediaScannerConnection.scanFile(context, paths, null) { _, _ ->
+                        if (--left == 0 && cont.isActive) cont.resume(Unit)
+                    }
+                }
+            }
+        }
+        return withContext(Dispatchers.IO) { load() }
     }
 
     fun load(): Library {
