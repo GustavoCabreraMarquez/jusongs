@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.swave.swave2000.components.ArtworkImage
 import com.swave.swave2000.components.BevelType
 import com.swave.swave2000.components.BeveledContainer
+import com.swave.swave2000.data.LIBRARY_FOLDER
 import com.swave.swave2000.model.Album
 import com.swave.swave2000.theme.*
 
@@ -65,7 +66,7 @@ fun EmptyLibrary(modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
         Text("NO MUSIC FOUND", fontWeight = FontWeight.Bold, color = Y2KTextPrimary)
         Text(
-            "Put FLAC, MP3, WAV or M4A files in your Music folder.",
+            "Copy FLAC, MP3, WAV or M4A files into the $LIBRARY_FOLDER folder on your phone.",
             color = Y2KTextSecondary,
             modifier = Modifier.padding(top = 4.dp)
         )
