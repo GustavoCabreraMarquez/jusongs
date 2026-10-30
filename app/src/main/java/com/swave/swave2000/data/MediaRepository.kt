@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -31,6 +32,9 @@ data class Library(
     }
 }
 
+/** Only audio under <storage>/Music/Jusongs is part of the library. */
+const val LIBRARY_FOLDER = "Music/Jusongs"
+
 class MediaRepository(private val context: Context) {
 
     private val collection: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -53,12 +57,20 @@ class MediaRepository(private val context: Context) {
         .map { load() }
         .flowOn(Dispatchers.IO)
 
+    /** Best-effort creation of the reserved folder so it shows up in file managers / USB transfer. */
+    fun ensureLibraryFolder() {
+        runCatching {
+            @Suppress("DEPRECATION")
+            java.io.File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "Jusongs").mkdirs()
+        }
+    }
+
     fun load(): Library {
         val rows = context.contentResolver.query(
             collection,
             AudioRowMapper.projection,
-            "${MediaStore.Audio.Media.IS_MUSIC} != 0",
-            null,
+            "${MediaStore.Audio.Media.DATA} LIKE ?",
+            arrayOf("%/${LIBRARY_FOLDER}/%"),
             null
         )?.use { AudioRowMapper.read(CursorRows(it)) }.orEmpty()
         return build(rows)

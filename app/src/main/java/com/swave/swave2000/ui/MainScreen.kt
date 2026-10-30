@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -31,7 +30,7 @@ fun MainScreen(vm: PlayerViewModel) {
     val library by vm.library.collectAsStateWithLifecycle()
     val ui by vm.ui.collectAsStateWithLifecycle()
 
-    var tab by rememberSaveable { mutableIntStateOf(0) }
+    var tab by rememberSaveable { mutableStateOf(NavTab.Home) }
     var openAlbumId by rememberSaveable { mutableStateOf<Long?>(null) }
     var nowPlaying by rememberSaveable { mutableStateOf(false) }
 
@@ -57,19 +56,15 @@ fun MainScreen(vm: PlayerViewModel) {
                         modifier = Modifier.weight(1f)
                     )
                 } else {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)) {
-                        TactileButton(onClick = { tab = 0 }, latched = tab == 0, modifier = Modifier.weight(1f)) {
-                            ButtonLabel("ALBUMS")
-                        }
-                        Box(Modifier.padding(horizontal = 4.dp))
-                        TactileButton(onClick = { tab = 1 }, latched = tab == 1, modifier = Modifier.weight(1f)) {
-                            ButtonLabel("SONGS")
-                        }
-                    }
-                    if (tab == 0) {
-                        AlbumsTab(library.albums, onOpen = { openAlbumId = it.id }, modifier = Modifier.weight(1f))
-                    } else {
-                        SongsTab(
+                    when (tab) {
+                        NavTab.Home -> HomeTab(
+                            library = library,
+                            onShuffleAll = { vm.playSongs(library.songs.shuffled(), 0); nowPlaying = true },
+                            onOpenAlbum = { openAlbumId = it.id },
+                            modifier = Modifier.weight(1f)
+                        )
+                        NavTab.Albums -> AlbumsTab(library.albums, onOpen = { openAlbumId = it.id }, modifier = Modifier.weight(1f))
+                        NavTab.Songs -> SongsTab(
                             songs = library.songs,
                             currentMediaId = ui.mediaId,
                             onPlay = { index -> vm.playSongs(library.songs, index); nowPlaying = true },
@@ -85,6 +80,7 @@ fun MainScreen(vm: PlayerViewModel) {
                         onNext = vm::next
                     )
                 }
+                BottomNav(selected = tab, onSelect = { tab = it; openAlbumId = null })
             }
         }
     }

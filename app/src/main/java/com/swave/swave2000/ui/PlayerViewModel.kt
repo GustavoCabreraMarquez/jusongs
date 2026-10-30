@@ -128,6 +128,7 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     /** Starts watching MediaStore. Call once the audio permission is granted. */
     fun startLibrary() {
         if (libraryJob?.isActive == true) return
+        repository.ensureLibraryFolder()
         libraryJob = viewModelScope.launch { repository.libraryFlow().collect { _library.value = it } }
     }
 
