@@ -1,6 +1,6 @@
-# S-WAVE 2000 ("Jusongs")
+# JuSongs
 
-A local-only, ad-free, high-fidelity music player for Android, with a Y2K retro-futurist look: glossy beveled surfaces, tactile buttons, a rotary volume knob and a dot-matrix LCD.
+A local-only, ad-free, high-fidelity music player for Android, with a modern glass look: frosted translucent panels over a painted landscape that changes with the time of day (morning, noon and a starry night with static snow).
 
 No subscription. No tracking. No algorithm. Only the music you put on your phone.
 
@@ -36,7 +36,8 @@ This reason is much lower on the priority list, but since this is a local music 
 - Plays local `.flac`, `.mp3`, `.wav` and `.m4a` files
 - Albums and Songs views
 - Background playback with notification and lock screen controls
-- Now Playing screen with dot-matrix LCD, spectrum analyzer, rotary volume knob and a format badge (e.g. `FLAC 24-bit 96kHz`)
+- Time-of-day theme chosen when the app opens: 05:00-09:59 morning, 10:00-17:59 noon, 18:00-04:59 night
+- Now Playing screen with progress bar, volume slider and a format badge (e.g. `FLAC 24-bit 96kHz`)
 - Bass boost and 3D sound effects
 - No accounts, no network, no ads
 
@@ -108,16 +109,16 @@ To only build the APK without installing:
 Copy the songs, albums and artists you actually want to hear to your phone:
 
 ```bash
-adb push "My Album" /sdcard/Music/
+adb push "My Album" /sdcard/Music/Jusongs/
 ```
 
-You can also use a file manager over USB (MTP) and drop the files into the `Music` folder.
+You can also use a file manager over USB (MTP) and drop the files into the `Music/Jusongs` folder.
 
 ### 7. Open the app
 
-Launch **S-WAVE 2000** and grant the audio and notification permissions when asked. Your music will show up in the Albums and Songs tabs.
+Launch **JuSongs** and grant the audio and notification permissions when asked. Your music will show up in the Albums and Songs tabs.
 
-> **Note:** for now the app lists the audio found by Android's media library. A dedicated, reserved music folder (so that WhatsApp audios and other clutter stay out) is planned, see [Enhancements-I.md](Enhancements-I.md).
+> **Note:** the app only lists audio inside `Music/Jusongs/`, so WhatsApp audios and other clutter stay out. If a freshly copied album does not show up, wait a moment (Android may still be reading its tags, especially large hi-res FLACs) or reopen the app.
 
 ---
 

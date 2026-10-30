@@ -1,54 +1,44 @@
 package com.swave.swave2000.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.swave.swave2000.components.BeveledContainer
-import com.swave.swave2000.components.GemBadge
-import com.swave.swave2000.components.TactileButton
-import com.swave.swave2000.theme.*
+import com.swave.swave2000.components.AppIcons
+import com.swave.swave2000.components.ArtworkImage
+import com.swave.swave2000.components.CircleButton
+import com.swave.swave2000.components.glassBlur
+import com.swave.swave2000.theme.LocalThemeTokens
 
+/** Glass capsule just above the bottom bar. */
 @Composable
 fun MiniPlayer(ui: PlayerUiState, onOpen: () -> Unit, onToggle: () -> Unit, onNext: () -> Unit, modifier: Modifier = Modifier) {
-    BeveledContainer(
-        modifier.fillMaxWidth().padding(12.dp),
-        cornerRadius = 28.dp,
-        backgroundColor = Y2KWarmCream
+    val t = LocalThemeTokens.current
+    val shape = RoundedCornerShape(18.dp)
+    Row(
+        modifier.padding(horizontal = 12.dp, vertical = 8.dp).fillMaxWidth().glassBlur(shape)
+            .clickable(onClick = onOpen).padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            Modifier.clickable(onClick = onOpen).padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            GemBadge(size = 30.dp)
-            Column(Modifier.weight(1f).padding(horizontal = 10.dp)) {
-                Text(ui.title, fontWeight = FontWeight.Bold, color = Y2KTextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(ui.artist, style = MaterialTheme.typography.labelMedium, color = Y2KTextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-            TactileButton(onClick = onToggle) {
-                Icon(
-                    if (ui.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = if (ui.isPlaying) "Pause" else "Play",
-                    tint = Y2KTextPrimary
-                )
-            }
-            TactileButton(onClick = onNext, modifier = Modifier.padding(start = 6.dp)) {
-                Icon(Icons.Filled.SkipNext, contentDescription = "Next", tint = Y2KTextPrimary)
-            }
+        ArtworkImage(ui.artworkUri, Modifier.size(40.dp).clip(RoundedCornerShape(9.dp)), ui.title)
+        Column(Modifier.weight(1f)) {
+            Text(ui.title, style = MaterialTheme.typography.bodyMedium, color = t.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(ui.artist, style = MaterialTheme.typography.bodySmall, color = t.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
+        CircleButton(if (ui.isPlaying) AppIcons.Pause else AppIcons.Play, if (ui.isPlaying) "Pause" else "Play", onToggle)
+        CircleButton(AppIcons.Next, "Next", onNext)
     }
 }
