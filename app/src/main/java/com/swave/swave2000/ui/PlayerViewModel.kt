@@ -132,6 +132,11 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
         libraryJob = viewModelScope.launch { repository.libraryFlow().collect { _library.value = it } }
     }
 
+    /** Re-indexes the library folder and reloads the library. */
+    fun refreshLibrary() {
+        viewModelScope.launch { _library.value = repository.rescan() }
+    }
+
     // ---- Playback -------------------------------------------------------------------------
 
     fun playSongs(songs: List<Song>, startIndex: Int) {

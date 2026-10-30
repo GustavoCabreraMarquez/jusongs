@@ -44,10 +44,11 @@ fun HomeTab(
     modifier: Modifier = Modifier,
     current: PlayerUiState = PlayerUiState(),
     onOpenNowPlaying: () -> Unit = {},
-    onTogglePlay: () -> Unit = {}
+    onTogglePlay: () -> Unit = {},
+    onRefresh: () -> Unit = {}
 ) {
     if (library.songs.isEmpty()) {
-        EmptyLibrary(modifier)
+        EmptyLibrary(modifier, onRefresh)
         return
     }
     val t = LocalThemeTokens.current
@@ -96,7 +97,10 @@ fun HomeTab(
             }
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
-            Text("Your albums", style = MaterialTheme.typography.titleMedium, color = t.ink, modifier = Modifier.padding(top = 4.dp))
+            Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("Your albums", style = MaterialTheme.typography.titleMedium, color = t.ink, modifier = Modifier.weight(1f))
+                TactileButton(onClick = onRefresh) { ButtonLabel("Refresh library") }
+            }
         }
         items(library.albums, key = { it.id }) { album ->
             AlbumCard(album, onClick = { onOpenAlbum(album) })
