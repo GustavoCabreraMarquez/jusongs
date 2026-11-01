@@ -101,12 +101,11 @@ fun NowPlayingScreen(vm: PlayerViewModel, onClose: () -> Unit, modifier: Modifie
 
                 SpectrumBars(spectrum, active = ui.isPlaying, Modifier.fillMaxWidth().height(32.dp))
 
-                ProgressPanel(
-                    progress = if (ui.durationMs > 0) ui.positionMs.toFloat() / ui.durationMs else 0f,
-                    elapsed = formatDuration(ui.positionMs),
-                    remaining = "-" + formatDuration(ui.durationMs - ui.positionMs),
-                    format = ui.format?.shortLabel()
-                )
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text("VOL", style = MonoSmallStyle, color = t.ink2)
+                    Spacer(Modifier.width(12.dp))
+                    ThinSlider(volume, vm::setVolume, Modifier.weight(1f))
+                }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(28.dp), verticalAlignment = Alignment.CenterVertically) {
                     CircleButton(AppIcons.Previous, "Previous", vm::previous)
@@ -118,11 +117,12 @@ fun NowPlayingScreen(vm: PlayerViewModel, onClose: () -> Unit, modifier: Modifie
                     CircleButton(AppIcons.Next, "Next", vm::next)
                 }
 
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("VOL", style = MonoSmallStyle, color = t.ink2)
-                    Spacer(Modifier.width(12.dp))
-                    ThinSlider(volume, vm::setVolume, Modifier.weight(1f))
-                }
+                ProgressPanel(
+                    progress = if (ui.durationMs > 0) ui.positionMs.toFloat() / ui.durationMs else 0f,
+                    elapsed = formatDuration(ui.positionMs),
+                    remaining = "-" + formatDuration(ui.durationMs - ui.positionMs),
+                    format = ui.format?.shortLabel()
+                )
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
                     TactileButton(onClick = vm::cycleBand, latched = ui.bandMode != BandMode.Off) { ButtonLabel(ui.bandMode.label.lowercase().replaceFirstChar { it.uppercase() }) }

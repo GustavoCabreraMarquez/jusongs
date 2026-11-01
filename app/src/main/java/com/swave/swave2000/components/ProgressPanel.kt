@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.swave.swave2000.theme.LocalThemeTokens
 import com.swave.swave2000.theme.MonoSmallStyle
 
-/** Thin progress bar (3dp `line` track, `acc` fill) with small monospace times and the format label. Replaces the LCD. */
+/** Progress bar (13dp, matching the volume thumb; `line` track, `acc` fill) with small monospace times and the format label. Replaces the LCD. */
 @Composable
 fun ProgressPanel(
     progress: Float,
@@ -28,9 +28,9 @@ fun ProgressPanel(
     modifier: Modifier = Modifier
 ) {
     val t = LocalThemeTokens.current
-    val shape = RoundedCornerShape(3.dp)
+    val shape = RoundedCornerShape(7.dp)
     Column(modifier.fillMaxWidth()) {
-        Box(Modifier.fillMaxWidth().height(3.dp).clip(shape).background(t.line)) {
+        Box(Modifier.fillMaxWidth().height(13.dp).clip(shape).background(t.line)) {
             Box(Modifier.fillMaxHeight().fillMaxWidth(progress.coerceIn(0f, 1f)).background(t.acc, shape))
         }
         Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
