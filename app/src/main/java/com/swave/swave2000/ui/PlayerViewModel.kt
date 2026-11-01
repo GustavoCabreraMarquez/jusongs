@@ -145,6 +145,16 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     fun next() { controller?.seekToNext() }
     fun previous() { controller?.seekToPrevious() }
 
+    /** Seeks within the current song; [fraction] is 0..1 of its duration. */
+    fun seekToFraction(fraction: Float) {
+        val c = controller ?: return
+        val d = c.duration
+        if (d <= 0) return
+        val target = (d * fraction.coerceIn(0f, 1f)).toLong()
+        c.seekTo(target)
+        _ui.update { it.copy(positionMs = target) }
+    }
+
     fun cycleBand() {
         val c = controller ?: return
         when (_ui.value.bandMode.next()) {

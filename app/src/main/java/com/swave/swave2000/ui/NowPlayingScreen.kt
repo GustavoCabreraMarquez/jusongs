@@ -121,7 +121,8 @@ fun NowPlayingScreen(vm: PlayerViewModel, onClose: () -> Unit, modifier: Modifie
                     progress = if (ui.durationMs > 0) ui.positionMs.toFloat() / ui.durationMs else 0f,
                     elapsed = formatDuration(ui.positionMs),
                     remaining = "-" + formatDuration(ui.durationMs - ui.positionMs),
-                    format = ui.format?.shortLabel()
+                    format = ui.format?.shortLabel(),
+                    onSeek = vm::seekToFraction
                 )
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
