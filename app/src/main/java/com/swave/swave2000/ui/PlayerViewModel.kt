@@ -6,7 +6,6 @@ import android.content.Context
 import android.database.ContentObserver
 import android.media.AudioManager
 import android.net.Uri
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -28,7 +27,6 @@ import com.swave.swave2000.data.Library
 import com.swave.swave2000.data.MediaRepository
 import com.swave.swave2000.data.TrackFormat
 import com.swave.swave2000.model.Song
-import com.swave.swave2000.service.EffectsCommand
 import com.swave.swave2000.service.PlaybackService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -57,8 +55,6 @@ data class PlayerUiState(
     val positionMs: Long = 0,
     val durationMs: Long = 0,
     val bandMode: BandMode = BandMode.Off,
-    val bassOn: Boolean = false,
-    val virtualizerOn: Boolean = false,
     val format: TrackFormat? = null
 )
 
@@ -95,10 +91,6 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
         override fun onEvents(player: Player, events: Player.Events) = sync()
     }
 
-    private val controllerListener = object : MediaController.Listener {
-        override fun onExtrasChanged(controller: MediaController, extras: Bundle) = applyExtras(extras)
-    }
-
     init {
         app.contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, volumeObserver)
         connect(app)
@@ -114,13 +106,12 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun connect(context: Context) {
         val token = SessionToken(context, ComponentName(context, PlaybackService::class.java))
-        val future = MediaController.Builder(context, token).setListener(controllerListener).buildAsync()
+        val future = MediaController.Builder(context, token).buildAsync()
         controllerFuture = future
         future.addListener({
             val c = runCatching { future.get() }.getOrNull() ?: return@addListener
             controller = c
             c.addListener(playerListener)
-            applyExtras(c.sessionExtras)
             sync()
         }, ContextCompat.getMainExecutor(context))
     }
@@ -154,14 +145,6 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     fun next() { controller?.seekToNext() }
     fun previous() { controller?.seekToPrevious() }
 
-    /** Stops playback and clears the queue. */
-    fun eject() {
-        controller?.run {
-            stop()
-            clearMediaItems()
-        }
-    }
-
     fun cycleBand() {
         val c = controller ?: return
         when (_ui.value.bandMode.next()) {
@@ -170,14 +153,6 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
             BandMode.One -> { c.repeatMode = Player.REPEAT_MODE_ONE; c.shuffleModeEnabled = false }
             BandMode.Shuffle -> { c.repeatMode = Player.REPEAT_MODE_ALL; c.shuffleModeEnabled = true }
         }
-    }
-
-    fun toggleBass() = sendEffects(!_ui.value.bassOn, _ui.value.virtualizerOn)
-    fun toggleVirtualizer() = sendEffects(_ui.value.bassOn, !_ui.value.virtualizerOn)
-
-    private fun sendEffects(bass: Boolean, virtualizer: Boolean) {
-        _ui.update { it.copy(bassOn = bass, virtualizerOn = virtualizer) }
-        controller?.sendCustomCommand(EffectsCommand.command, EffectsCommand.bundle(bass, virtualizer))
     }
 
     // ---- Volume ---------------------------------------------------------------------------
@@ -195,15 +170,6 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // ---- State sync -----------------------------------------------------------------------
-
-    private fun applyExtras(extras: Bundle) {
-        _ui.update {
-            it.copy(
-                bassOn = extras.getBoolean(EffectsCommand.KEY_BASS),
-                virtualizerOn = extras.getBoolean(EffectsCommand.KEY_VIRTUALIZER)
-            )
-        }
-    }
 
     private fun sync() {
         val c = controller ?: return

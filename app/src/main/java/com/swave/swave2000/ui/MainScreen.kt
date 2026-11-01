@@ -26,7 +26,7 @@ fun MainScreen(vm: PlayerViewModel) {
 
     BackHandler(enabled = nowPlaying) { nowPlaying = false }
     BackHandler(enabled = !nowPlaying && openAlbumId != null) { openAlbumId = null }
-    // Eject (or the queue ending) returns to the library
+    // The queue ending returns to the library
     LaunchedEffect(ui.hasQueue) { if (!ui.hasQueue) nowPlaying = false }
 
     // The painted background is drawn by the caller, so this screen handles the system bar insets itself.
