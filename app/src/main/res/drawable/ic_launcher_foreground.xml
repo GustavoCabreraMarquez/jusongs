@@ -4,9 +4,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:fillColor="#E8ECE9" android:pathData="M34,44 L44,30 L64,30 L74,44 L54,80 Z" />
-    <path android:fillColor="#8BBBB3" android:pathData="M34,44 L74,44 L54,80 Z" />
-    <path android:fillColor="#6B9A92" android:pathData="M34,44 L54,44 L54,80 Z" />
-    <path android:fillColor="#F7F3E9" android:pathData="M44,30 L54,44 L64,30 Z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M44,30 L34,44 L54,44 Z" />
+    <!-- Warm disc with a music note, matching the morning theme (bg #FBE6D3, accent #E8895A) -->
+    <path android:fillColor="#E8895A" android:pathData="M54,54m-26,0a26,26 0,1 1,52 0a26,26 0,1 1,-52 0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M58,36 L58,58.5 A6,5 0,1 1,54,54 L54,42 L64,40 L64,36 Z" />
 </vector>
